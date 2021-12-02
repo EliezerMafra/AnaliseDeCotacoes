@@ -1,0 +1,90 @@
+populationSize: 3000
+mutationProbGene: 0.01
+mutationProbIndividual: 0.3
+crossoverRate: 0.1
+elitismCountperCent: 0.15
+numberOfGenerations: 5000
+Best Fitness: -7116.2705
+RealReturn: 0.1277419362256524
+---------------------------------------------------
+populationSize: 3000
+mutationProbGene: 0.01
+mutationProbIndividual: 0.3
+crossoverRate: 0.2
+elitismCountperCent: 0.15
+numberOfGenerations: 5000
+Best Fitness: -5015.7764
+RealReturn: 0.30409546850668284
+---------------------------------------------------
+populationSize: 3000
+mutationProbGene: 0.01
+mutationProbIndividual: 0.3
+crossoverRate: 0.5
+elitismCountperCent: 0.15
+numberOfGenerations: 5000
+Best Fitness: -15783.852
+RealReturn: 0.12987857582609422
+---------------------------------------------------
+populationSize: 3000
+mutationProbGene: 0.01
+mutationProbIndividual: 0.3
+crossoverRate: 0.8
+elitismCountperCent: 0.15
+numberOfGenerations: 5000
+Best Fitness: -15179.62
+RealReturn: 0.06250681958431331
+---------------------------------------------------
+populationSize: 3000
+mutationProbGene: 0.01
+mutationProbIndividual: 0.3
+crossoverRate: 0.9
+elitismCountperCent: 0.15
+numberOfGenerations: 5000
+Best Fitness: -3697.6812
+RealReturn: 0.13498269315289163
+---------------------------------------------------
+populationSize: 3000
+mutationProbGene: 0.05
+mutationProbIndividual: 0.3
+crossoverRate: 0.1
+elitismCountperCent: 0.15
+numberOfGenerations: 5000
+Best Fitness: -9100.86
+RealReturn: 0.14038705056520578
+---------------------------------------------------
+populationSize: 3000
+mutationProbGene: 0.05
+mutationProbIndividual: 0.3
+crossoverRate: 0.2
+elitismCountperCent: 0.15
+numberOfGenerations: 5000
+Best Fitness: -11920.79
+RealReturn: 0.12022686224422294
+---------------------------------------------------
+populationSize: 3000
+mutationProbGene: 0.05
+mutationProbIndividual: 0.3
+crossoverRate: 0.5
+elitismCountperCent: 0.15
+numberOfGenerations: 5000
+Best Fitness: -7347.6016
+RealReturn: 0.32225560341043696
+---------------------------------------------------
+populationSize: 3000
+mutationProbGene: 0.05
+mutationProbIndividual: 0.3
+crossoverRate: 0.8
+elitismCountperCent: 0.15
+numberOfGenerations: 5000
+Best Fitness: -4912.8276
+RealReturn: 0.16287502271976426
+---------------------------------------------------
+populationSize: 3000
+mutationProbGene: 0.05
+mutationProbIndividual: 0.3
+crossoverRate: 0.9
+elitismCountperCent: 0.15
+numberOfGenerations: 5000
+Best Fitness: -3667.0405
+RealReturn: 0.13186197851155307
+---------------------------------------------------
