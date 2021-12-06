@@ -1,0 +1,3 @@
+PopSize,MutationProbgene,MutationProbIndividual,CrossoverProb,ElitismProb,NumberOfGenerations,BestFitness,RealReturn,
+500,0.05,0.1,0.3,0.2,100,-493.1131,0.22354998445863708,
+500,0.05,0.1,0.3,0.2,200,-2093.836,0.17291181294678354,

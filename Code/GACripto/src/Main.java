@@ -13,7 +13,7 @@ public class Main {
         final double[] mutationProbIndividual = {0.1};
         final double[] crossoverRate = {0.3};
         final double[] elitismCountperCent = {0.2}; //taxa
-        final int[] numberOfGenerations = {200};
+        final int[] numberOfGenerations = {100, 200};
 
         int elitismCount;
 
@@ -97,12 +97,12 @@ public class Main {
 
                                 //GA------------------------------------------
 
-                                System.out.println("populationSize: " +populationSize[i]);
-                                System.out.println("mutationProbGene: " +mutationProbGene[j]);
-                                System.out.println("mutationProbIndividual: " +mutationProbIndividual[l]);
-                                System.out.println("crossoverRate: " +crossoverRate[m]);
-                                System.out.println("elitismCountperCent: " +elitismCountperCent[n]);
-                                System.out.println("numberOfGenerations: " +numberOfGenerations[o]);
+                                //System.out.println("populationSize: " +populationSize[i]);
+                                //System.out.println("mutationProbGene: " +mutationProbGene[j]);
+                                //System.out.println("mutationProbIndividual: " +mutationProbIndividual[l]);
+                                //System.out.println("crossoverRate: " +crossoverRate[m]);
+                                //System.out.println("elitismCountperCent: " +elitismCountperCent[n]);
+                                //System.out.println("numberOfGenerations: " +numberOfGenerations[o]);
 
                                 GeneticAlgorithm ga = new GeneticAlgorithm(populationSize[i], mutationProbGene[j], mutationProbIndividual[l], crossoverRate[m], elitismCount, numberOfGenerations[o]);
 
@@ -114,10 +114,10 @@ public class Main {
                                     population = ga.crossover(population);
                                     population = ga.mutation(population);
                                     ga.evalPopulation(population);
-                                    System.out.println(population.getGeneration() + "\t"+population.getFittest(0).getFitness());
+                                    //System.out.println(population.getGeneration() + "\t"+population.getFittest(0).getFitness());
                                 }
 
-                                System.out.println("Best Fitness: "+population.getFittest(0).getFitness());
+                                //System.out.println("Best Fitness: "+population.getFittest(0).getFitness());
 
                                 Individual bestInd = population.getFittest(0);
                                 double realReturn = 0;
@@ -126,8 +126,8 @@ public class Main {
                                     realReturn += bestInd.getGene(p) * futureReturn[p];
                                 }
 
-                                System.out.println("RealReturn: "+realReturn);
-                                System.out.println("---------------------------------------------------");
+                                //System.out.println("RealReturn: "+realReturn);
+                                //System.out.println("---------------------------------------------------");
 
                                 table[tableLine][0] = String.valueOf(populationSize[i]);
                                 table[tableLine][1] = String.valueOf(mutationProbGene[j]);
@@ -137,6 +137,8 @@ public class Main {
                                 table[tableLine][5] = String.valueOf(numberOfGenerations[o]);
                                 table[tableLine][6] = String.valueOf(bestInd.getFitness());
                                 table[tableLine][7] = String.valueOf(realReturn);
+                                
+                                tableLine++;
                             }
                         }
                     }
@@ -144,7 +146,7 @@ public class Main {
             }
         }
 
-        String filePathWriter = "../tableAG3.csv";
+        String filePathWriter = "../tableAG4.csv";
 
         try {
             FileWriter writer = new FileWriter(filePathWriter);
