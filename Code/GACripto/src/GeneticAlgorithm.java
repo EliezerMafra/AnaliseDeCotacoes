@@ -8,7 +8,10 @@ public class GeneticAlgorithm {
     private int elitismCount;
     private int numberGenerationsToFinish;
 
-    public GeneticAlgorithm(int populationSize, double mutationProbGene,double mutationProbIndividual, double crossoverRate, int elitismCount, int numberGenerationsToFinish) {
+    public GeneticAlgorithm() {
+    }
+
+    public GeneticAlgorithm(int populationSize, double mutationProbGene, double mutationProbIndividual, double crossoverRate, int elitismCount, int numberGenerationsToFinish) {
         this.populationSize = populationSize;
         this.mutationProbGene = mutationProbGene;
         this.mutationProbIndividual = mutationProbGene;
@@ -22,7 +25,7 @@ public class GeneticAlgorithm {
         return population;
     }
 
-    public double calcFitness(Individual individual, double[][] covarMatrix){
+    public static double calcFitness(Individual individual, double[][] covarMatrix){
         float fitness = 0;
 
         double sumI = 0;
