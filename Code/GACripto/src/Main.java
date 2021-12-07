@@ -8,12 +8,12 @@ public class Main {
     public static void main(String[] args) {
 
         final int k[] = {181};
-        final int[] populationSize = {500};
-        final double[] mutationProbGene = {0.05};
-        final double[] mutationProbIndividual = {0.1};
-        final double[] crossoverRate = {0.3};
-        final double[] elitismCountperCent = {0.2}; //taxa
-        final int[] numberOfGenerations = {100, 200};
+        final int[] populationSize = {500,1000,2000};
+        final double[] mutationProbGene = {0.01, 0.03, 0.05, 0.08, 0.1, 0.2, 0.3, 0.5};
+        final double[] mutationProbIndividual = {0.05, 0.1, 0.15, 0.3, 0.5, 0.8};
+        final double[] crossoverRate = {0.1, 0.2, 0.3, 0.6, 0.8, 0.9};
+        final double[] elitismCountperCent = {0.1, 0.15, 0.2, 0.5, 0.8}; //taxa
+        final int[] numberOfGenerations = {200, 500, 1000};
 
         int elitismCount;
 
@@ -127,7 +127,7 @@ public class Main {
                                 }
 
                                 //System.out.println("RealReturn: "+realReturn);
-                                //System.out.println("---------------------------------------------------");
+
 
                                 table[tableLine][0] = String.valueOf(populationSize[i]);
                                 table[tableLine][1] = String.valueOf(mutationProbGene[j]);
@@ -137,8 +137,30 @@ public class Main {
                                 table[tableLine][5] = String.valueOf(numberOfGenerations[o]);
                                 table[tableLine][6] = String.valueOf(bestInd.getFitness());
                                 table[tableLine][7] = String.valueOf(realReturn);
-                                
+
                                 tableLine++;
+
+                                String filePathWriter = "../tableAG_SUPER.csv";
+
+                                try {
+                                    FileWriter writer = new FileWriter(filePathWriter);
+
+                                    for (int a = 0; a < sizeTable + 1; a++) {
+                                        for (int b = 0; b < 8; b++) {
+                                            writer.append(table[a][b]);
+                                            writer.append(",");
+                                        }
+                                        writer.append("\n");
+                                    }
+
+                                    writer.close();
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                System.out.println(tableLine + " Completo de \t" + sizeTable);
+
+                            }
                             }
                         }
                     }
@@ -146,24 +168,5 @@ public class Main {
             }
         }
 
-        String filePathWriter = "../tableAG4.csv";
 
-        try {
-            FileWriter writer = new FileWriter(filePathWriter);
-
-            for (int i = 0; i < sizeTable + 1; i++) {
-                for (int j = 0; j < 8; j++) {
-                    writer.append(table[i][j]);
-                    writer.append(",");
-                }
-                writer.append("\n");
-            }
-
-            writer.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
 }
