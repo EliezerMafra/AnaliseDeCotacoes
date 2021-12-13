@@ -8,20 +8,20 @@ public class Main {
     public static void main(String[] args) {
 
         final int k[] = {181};
-        final int[] populationSize = {500,1000,2000};
-        final double[] mutationProbGene = {0.01, 0.03, 0.05, 0.08, 0.1, 0.2, 0.3, 0.5};
-        final double[] mutationProbIndividual = {0.05, 0.1, 0.15, 0.3, 0.5, 0.8};
-        final double[] crossoverRate = {0.1, 0.2, 0.3, 0.6, 0.8, 0.9};
-        final double[] elitismCountperCent = {0.1, 0.15, 0.2, 0.5, 0.8}; //taxa
-        final int[] numberOfGenerations = {200, 500, 1000};
+        final int[] populationSize = {500};
+        final double[] mutationProbGene = {0.01};
+        final double[] mutationProbIndividual = {0.5, 0.8};
+        final double[] crossoverRate = {0.1, 0.2, 0.3};
+        final double[] elitismCountperCent = {0.1, 0.15, 0.2}; //taxa
+        final int[] numberOfGenerations = {200, 500};
 
         int elitismCount;
 
         int sizeTable = populationSize.length*mutationProbGene.length*mutationProbIndividual.length*crossoverRate.length*elitismCountperCent.length*numberOfGenerations.length;
 
-        String[][] table = new String[sizeTable + 1][8];
+        String[][] table = new String[sizeTable + 1][9];
 
-        table[0] = new String[]{"PopSize", "MutationProbgene", "MutationProbIndividual", "CrossoverProb", "ElitismProb", "NumberOfGenerations", "BestFitness", "RealReturn"};
+        table[0] = new String[]{"PopSize", "MutationProbgene", "MutationProbIndividual", "CrossoverProb", "ElitismProb", "NumberOfGenerations","Pastreturn", "BestFitness", "RealReturn"};
 
         //Carregamento dos arquivos----------------------------------
 
@@ -85,6 +85,31 @@ public class Main {
             e.printStackTrace();
         }
 
+        filePathReader = "../covarFiltrado/"+k[0]+"_Retorno.csv";
+        double[] pastReturn = new double[0];
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(filePathReader));
+
+            String row;
+
+            row = reader.readLine();
+
+            String[] line = row.split(",");
+
+            pastReturn = new double[names.length];
+
+            for(int i = 0; (row = reader.readLine()) !=  null; i++){
+                line = row.split(",");
+                pastReturn[i] = Double.valueOf(line[2]);
+            }
+
+            reader.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         int tableLine = 1;
 
         for (int i = 0; i < populationSize.length; i++) {
@@ -120,10 +145,16 @@ public class Main {
                                 //System.out.println("Best Fitness: "+population.getFittest(0).getFitness());
 
                                 Individual bestInd = population.getFittest(0);
-                                double realReturn = 0;
+                                double futureReturnSum = 0;
 
                                 for (int p = 0; p < futureReturn.length; p++) {
-                                    realReturn += bestInd.getGene(p) * futureReturn[p];
+                                    futureReturnSum += bestInd.getGene(p) * futureReturn[p];
+                                }
+
+                                double pastReturnSum = 0;
+
+                                for (int p = 0; p < futureReturn.length; p++) {
+                                    pastReturnSum += bestInd.getGene(p) * pastReturn[p];
                                 }
 
                                 //System.out.println("RealReturn: "+realReturn);
@@ -136,7 +167,8 @@ public class Main {
                                 table[tableLine][4] = String.valueOf(elitismCountperCent[n]);
                                 table[tableLine][5] = String.valueOf(numberOfGenerations[o]);
                                 table[tableLine][6] = String.valueOf(bestInd.getFitness());
-                                table[tableLine][7] = String.valueOf(realReturn);
+                                table[tableLine][7] = String.valueOf(futureReturnSum);
+                                table[tableLine][8] = String.valueOf(pastReturnSum);
 
                                 tableLine++;
 
@@ -146,7 +178,7 @@ public class Main {
                                     FileWriter writer = new FileWriter(filePathWriter);
 
                                     for (int a = 0; a < sizeTable + 1; a++) {
-                                        for (int b = 0; b < 8; b++) {
+                                        for (int b = 0; b < 9; b++) {
                                             writer.append(table[a][b]);
                                             writer.append(",");
                                         }
