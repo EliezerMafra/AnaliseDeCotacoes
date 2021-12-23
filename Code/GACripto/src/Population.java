@@ -60,27 +60,16 @@ public class Population {
      * @return individual Individual at offset
      */
     public Individual getFittest(int offset){
-        /*Arrays.sort(this.population, (o1, o2) -> {
+        Arrays.sort(this.population, (o1, o2) -> {
             if (o1.getFitness() < o2.getFitness()) {
                 return -1;
             } else if (o1.getFitness() > o2.getFitness()) {
                 return 1;
             }
             return 0;
-        });*/
-
-        Arrays.sort(this.population, (o1, o2) -> {
-            if (Math.abs(o1.getFitness()) < Math.abs(o2.getFitness())) {
-                return -1;
-            } else if (Math.abs(o1.getFitness()) > Math.abs(o2.getFitness())) {
-                return 1;
-            }
-            return 0;
         });
 
-
-
-        return this.population[offset];
+       return this.population[offset];
     }
 
     public int size(){
