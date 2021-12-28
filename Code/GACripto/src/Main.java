@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.Collections;
 
-public class Main{
+public class Main {
 
     public static final int[] populationSize = {1000, 1500};
     public static final double[] mutationProbGene = {0.02, 0.03};
@@ -50,36 +50,29 @@ public class Main{
 
         for (int i = 0; i < populationSize.length; i++) {
             for (int j = 0; j < mutationProbGene.length; j++) {
-                for (int k = 0; k < mutationProbIndividual.length; k++) {
-                    for (int l = 0; l < crossoverRate.length; l++) {
-                        for (int m = 0; m < elitismCountperCent.length; m++) {
-                            for (int n = 0; n < numberOfGenerations.length; n++) {
+                final int iT = i;
+                final int jT = j;
 
-                                final int elitismCount = (int) (populationSize[i] * elitismCountperCent[m]);
+                final String filePathReaderT = filePathReader;
 
-                                final int iT = i;
-                                final int jT = j;
-                                final int kT = k;
-                                final int lT = l;
-                                final int mT = m;
-                                final int nT = n;
-                                final String filePathReaderT = filePathReader;
+                Thread t = new Thread(new Runnable() {
+                    int i = iT;
+                    int j = jT;
 
-                                Thread t = new Thread(new Runnable() {
-                                    int i = iT;
-                                    int j = jT;
-                                    int k = kT;
-                                    int l = lT;
-                                    int m = mT;
-                                    int n = nT;
-                                    String filePathReader = filePathReaderT;
+                    String filePathReader = filePathReaderT;
 
 
-                                    @Override
-                                    public void run() {
+                    @Override
+                    public void run() {
+                        for (int k = 0; k < mutationProbIndividual.length; k++) {
+                            for (int l = 0; l < crossoverRate.length; l++) {
+                                for (int m = 0; m < elitismCountperCent.length; m++) {
+                                    for (int n = 0; n < numberOfGenerations.length; n++) {
 
-                                        String filePathWriter = "../ConfParam/PopSize="+populationSize[i]+"_MutGene="+mutationProbGene[j]
-                                                +"_MutInd="+mutationProbIndividual[k]+"_Crossover="+crossoverRate[l]+"_Elit="+elitismCountperCent[m]+"_Gen="+numberOfGenerations[n]+".csv";
+                                        int elitismCount = (int) (populationSize[i] * elitismCountperCent[m]);
+
+                                        String filePathWriter = "../ConfParam/PopSize=" + populationSize[i] + "_MutGene=" + mutationProbGene[j]
+                                                + "_MutInd=" + mutationProbIndividual[k] + "_Crossover=" + crossoverRate[l] + "_Elit=" + elitismCountperCent[m] + "_Gen=" + numberOfGenerations[n] + ".csv";
 
                                         try {
                                             FileWriter writer = new FileWriter(filePathWriter, true);
@@ -89,7 +82,7 @@ public class Main{
                                             }
 
                                             writer.close();
-                                        }catch (Exception e){
+                                        } catch (Exception e) {
                                             e.printStackTrace();
                                         }
 
@@ -194,24 +187,24 @@ public class Main{
                                             }
                                             //----------------------------------------------
 
-                                            double weightDummie = 1.0/assetsNumber;
+                                            double weightDummie = 1.0 / assetsNumber;
 
                                             float[] weightsDummie = new float[assetsNumber];
 
                                             double pastReturnDummieSum = 0;
 
                                             for (int x = 0; x < assetsNumber; x++) {
-                                                pastReturnDummieSum += weightDummie*pastReturn[x];
+                                                pastReturnDummieSum += weightDummie * pastReturn[x];
                                             }
 
                                             double futureReturnDummieSum = 0;
 
                                             for (int x = 0; x < assetsNumber; x++) {
-                                                futureReturnDummieSum += weightDummie*futureReturn[x];
+                                                futureReturnDummieSum += weightDummie * futureReturn[x];
                                                 weightsDummie[x] = (float) weightDummie;
                                             }
 
-                                            double fitnessDummie = ga.calcFitness(new Individual(weightsDummie),covarMatrix);
+                                            double fitnessDummie = ga.calcFitness(new Individual(weightsDummie), covarMatrix);
 
                                             Individual bestInd = population.getFittest(0);
                                             double futureReturnSum = 0;
@@ -242,48 +235,51 @@ public class Main{
 
                                             double maxDrawDown = (maxReturn - minReturn) / maxReturn;
 
-                                            try{
+                                            try {
                                                 FileWriter writer = new FileWriter(filePathWriter, true);
 
                                                 writer.append("\n");
 
-                                                writer.append(day+",");
-                                                writer.append(fitnessDummie+",");
-                                                writer.append(pastReturnDummieSum+",");
-                                                writer.append(futureReturnDummieSum+",");
-                                                writer.append(bestInd.getFitness()+",");
-                                                writer.append(pastReturnSum+",");
-                                                writer.append(futureReturnSum+",");
-                                                writer.append(futureReturnMean+",");
-                                                writer.append(stdDeviation+",");
-                                                writer.append(""+maxDrawDown);
+                                                writer.append(day + ",");
+                                                writer.append(fitnessDummie + ",");
+                                                writer.append(pastReturnDummieSum + ",");
+                                                writer.append(futureReturnDummieSum + ",");
+                                                writer.append(bestInd.getFitness() + ",");
+                                                writer.append(pastReturnSum + ",");
+                                                writer.append(futureReturnSum + ",");
+                                                writer.append(futureReturnMean + ",");
+                                                writer.append(stdDeviation + ",");
+                                                writer.append("" + maxDrawDown);
 
                                                 for (int x = 0; x < bestInd.getChromossomeLength(); x++) {
-                                                    writer.append(","+bestInd.getGene(x));
+                                                    writer.append("," + bestInd.getGene(x));
                                                 }
 
                                                 writer.close();
-                                            }catch (Exception e){
+                                            } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
 
 
-                                            System.out.println("Dia "+day+" entre "+startDay+" e "+endDay+"\t para combinação: "+i+j+k+l+m+n);
+                                            System.out.println("Dia " + day + " entre " + startDay + " e " + endDay + "\t para combinação: " + i + j + k + l + m + n);
                                         }
                                     }
-                                });
-
-                                t.start();
+                                }
 
                             }
                         }
                     }
-                }
+                });
+
+                t.start();
+
             }
+
         }
     }
 
-    public static String[] fillFirstLine(){
+
+    public final static String[] fillFirstLine() {
 
         return new String[]
                 {
