@@ -1,4 +1,4 @@
-public class Param {
+public class Parameter {
     private int popSize;
     private double mutGen;
     private double mutInd;
@@ -9,7 +9,7 @@ public class Param {
     private double stdDeviation;
     private double maxDrawDown;
 
-    public Param(int popSize, double mutGen, double mutInd, double cross, double elit, int gens) {
+    public Parameter(int popSize, double mutGen, double mutInd, double cross, double elit, int gens) {
         this.popSize = popSize;
         this.mutGen = mutGen;
         this.mutInd = mutInd;
@@ -88,5 +88,20 @@ public class Param {
 
     public void setMaxDrawDown(double maxDrawDown) {
         this.maxDrawDown = maxDrawDown;
+    }
+
+    @Override
+    public String toString() {
+        return "Param{" +
+                "popSize=" + popSize +
+                ", mutGen=" + mutGen +
+                ", mutInd=" + mutInd +
+                ", cross=" + cross +
+                ", elit=" + elit +
+                ", gens=" + gens +
+                ", futureReturnMean=" + futureReturnMean +
+                ", stdDeviation=" + stdDeviation +
+                ", maxDrawDown=" + maxDrawDown +
+                '}';
     }
 }

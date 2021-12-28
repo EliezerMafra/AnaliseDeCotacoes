@@ -13,7 +13,7 @@ public class Main {
     public static final int[] numberOfGenerations = {500, 1000};
     public static final int startDay = 80;
     public static final int endDay = 100;
-    public static final int bestSelector = 1;
+    public static final int bestSelector = 50;
 
     public static void main(String[] args) throws Exception{
                 final int numberOfDays = endDay - startDay;
@@ -21,7 +21,7 @@ public class Main {
         int numberOfFiles = populationSize.length * mutationProbGene.length * mutationProbIndividual.length
                 * crossoverRate.length * elitismCountperCent.length * numberOfGenerations.length;
 
-        ArrayList<Param> params = new ArrayList<>();
+        ArrayList<Parameter> parameters = new ArrayList<>();
 
         int countFile = 0;
 
@@ -38,7 +38,7 @@ public class Main {
                             for (int n = 0; n < numberOfGenerations.length; n++)
                             {
 
-                                Param p = new Param(populationSize[i], mutationProbGene[j], mutationProbIndividual[k]
+                                Parameter p = new Parameter(populationSize[i], mutationProbGene[j], mutationProbIndividual[k]
                                         , crossoverRate[l], elitismCountperCent[m], numberOfGenerations[n]);
 
                                 String fileReaderPath = "../ConfParam/PopSize=" + populationSize[i] + "_MutGene=" + mutationProbGene[j]
@@ -83,9 +83,9 @@ public class Main {
                                 double maxReturn = Arrays.stream(futureReturn).max().getAsDouble();
                                 double minReturn = Arrays.stream(futureReturn).min().getAsDouble();
 
-                                p.setMaxDrawDown((maxReturn - minReturn) / maxReturn);
+                                p.setMaxDrawDown(minReturn);
 
-                                params.add(p);
+                                parameters.add(p);
                             }
                         }
                     }
@@ -93,76 +93,44 @@ public class Main {
             }
         }
 
-        Collections.sort(params, ((o1, o2) -> {
+        Collections.sort(parameters, ((o1, o2) -> {
             if (o1.getFutureReturnMean() > o2.getFutureReturnMean())
                 return -1;
             else
                 return 1;
         }));
 
-        ArrayList<Param> bestFutureReturnMean = new ArrayList<Param>(params.subList(0,bestSelector));
+        ArrayList<Parameter> bestFutureReturnMean = new ArrayList<Parameter>(parameters.subList(0,bestSelector));
 
-        Collections.sort(params, ((o1, o2) -> {
+        Collections.sort(parameters, ((o1, o2) -> {
             if (o1.getStdDeviation() < o2.getStdDeviation())
                 return -1;
             else
                 return 1;
         }));
 
-        ArrayList<Param> bestStdDeviation = new ArrayList<Param>(params.subList(0,bestSelector));
+        ArrayList<Parameter> bestStdDeviation = new ArrayList<Parameter>(parameters.subList(0,bestSelector));
 
-        Collections.sort(params, ((o1, o2) -> {
-            if (o1.getMaxDrawDown() < o2.getMaxDrawDown())
-                return -1;
-            else
-                return 1;
-        }));
 
-        ArrayList<Param> bestMaxDrawDown = new ArrayList<Param>(params.subList(0,bestSelector));
+        BufferedWriter writer = new BufferedWriter(new FileWriter("../paramsBestFutureReturnMean.csv"));
 
-        HashSet<Integer> popSize = new HashSet<Integer>();
-        HashSet<Double> mutGen = new HashSet<Double>();
-        HashSet<Double> mutInd = new HashSet<Double>();
-        HashSet<Double> cross = new HashSet<Double>();
-        HashSet<Double> elit = new HashSet<Double>();
-        HashSet<Integer> nGenerations = new HashSet<Integer>();
+        writer.append("popSize,mutGen,mutInd,cross,elit,nGenerations\n");
 
-        for (Param p : bestFutureReturnMean)
-        {
-            popSize.add(p.getPopSize());
-            mutGen.add(p.getMutGen());
-            mutInd.add(p.getMutInd());
-            cross.add(p.getCross());
-            elit.add(p.getElit());
-            nGenerations.add(p.getGens());
-        }
-        for (Param p : bestStdDeviation)
-        {
-            popSize.add(p.getPopSize());
-            mutGen.add(p.getMutGen());
-            mutInd.add(p.getMutInd());
-            cross.add(p.getCross());
-            elit.add(p.getElit());
-            nGenerations.add(p.getGens());
-        }
-        for (Param p : bestMaxDrawDown)
-        {
-            popSize.add(p.getPopSize());
-            mutGen.add(p.getMutGen());
-            mutInd.add(p.getMutInd());
-            cross.add(p.getCross());
-            elit.add(p.getElit());
-            nGenerations.add(p.getGens());
+        for (Parameter p: bestFutureReturnMean) {
+            writer.append(p.getPopSize()+","+p.getMutGen()+","+p.getMutInd()+","+p.getCross()+","+p.getElit()+","+p.getGens()+"\n");
         }
 
-        System.out.println();
+        writer.close();
 
+        writer = new BufferedWriter(new FileWriter("../paramsBestStdDeviation.csv"));
 
+        writer.append("popSize,mutGen,mutInd,cross,elit,nGenerations\n");
 
+        for (Parameter p: bestStdDeviation) {
+            writer.append(p.getPopSize()+","+p.getMutGen()+","+p.getMutInd()+","+p.getCross()+","+p.getElit()+","+p.getGens()+"\n");
+        }
 
-        //BufferedWriter writer = new BufferedWriter(new FileWriter("../params.csv"));
-
-        //writer.append("public static final int[] populationSize = ");
+        writer.close();
 
 
 
