@@ -7,12 +7,12 @@ import java.util.Collections;
 
 public class Main {
 
-    public static final int[] populationSize = {1000, 1500};
+    public static final int[] populationSize = {1000, 1500, 500};
     public static final double[] mutationProbGene = {0.02, 0.03};
     public static final double[] mutationProbIndividual = {0.2, 0.3, 0.4};
     public static final double[] crossoverRate = {0.3, 0.4, 0.5, 0.6};
     public static final double[] elitismCountperCent = {0.2, 0.3}; //taxa
-    public static final int[] numberOfGenerations = {500, 1000};
+    public static final int[] numberOfGenerations = {500, 1000, 1500};
     public static final int startDay = 80;
     public static final int endDay = 100;
 
@@ -106,7 +106,7 @@ public class Main {
                                                 for (int x = 0; (row = reader.readLine()) != null; x++) {
                                                     line = row.split(",");
                                                     for (int y = 0; y < assetsNumber; y++) {
-                                                        covarMatrix[x][y] = Double.valueOf(line[j + 1]);
+                                                        covarMatrix[x][y] = Double.valueOf(line[y + 1]);
                                                     }
                                                 }
 
@@ -219,22 +219,6 @@ public class Main {
                                                 pastReturnSum += bestInd.getGene(p) * pastReturn[p];
                                             }
 
-
-                                            double futureReturnMean = futureReturnSum / assetsNumber;
-
-                                            double stdDeviationSum = 0;
-
-                                            for (int p = 0; p < futureReturn.length; p++) {
-                                                stdDeviationSum += Math.pow(futureReturn[p] - futureReturnMean, 2);
-                                            }
-
-                                            double stdDeviation = Math.sqrt(stdDeviationSum / futureReturn.length);
-
-                                            double maxReturn = Arrays.stream(futureReturn).max().getAsDouble();
-                                            double minReturn = Arrays.stream(futureReturn).min().getAsDouble();
-
-                                            double maxDrawDown = (maxReturn - minReturn) / maxReturn;
-
                                             try {
                                                 FileWriter writer = new FileWriter(filePathWriter, true);
 
@@ -247,9 +231,6 @@ public class Main {
                                                 writer.append(bestInd.getFitness() + ",");
                                                 writer.append(pastReturnSum + ",");
                                                 writer.append(futureReturnSum + ",");
-                                                writer.append(futureReturnMean + ",");
-                                                writer.append(stdDeviation + ",");
-                                                writer.append("" + maxDrawDown);
 
                                                 for (int x = 0; x < bestInd.getChromossomeLength(); x++) {
                                                     writer.append("," + bestInd.getGene(x));
@@ -290,9 +271,6 @@ public class Main {
                         "BestFitness",
                         "PastReturn",
                         "FutureReturn",
-                        "FutureReturnMean",
-                        "StandardDeviation",
-                        "MaxDrawDown",
                         "w1",
                         "w2",
                         "w3",
