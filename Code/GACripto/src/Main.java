@@ -6,8 +6,8 @@ import java.util.Random;
 import java.util.Collections;
 
 public class Main {
-    public static final int startDay = 80;
-    public static final int endDay = 100;
+    public static final int startDay = 101;
+    public static final int endDay = 197;
 
     public static void main(String[] args) throws Exception{
 
@@ -35,7 +35,7 @@ public class Main {
 
         reader.close();
 
-        filePathReader = "../paramsBestStdDeviation.cs";
+        filePathReader = "../paramsBestStdDeviation.csv";
 
         reader = new BufferedReader(new FileReader(filePathReader));
 
@@ -58,7 +58,6 @@ public class Main {
         String[] names = new String[0];
         int assetsNumber;
 
-
         reader = new BufferedReader(new FileReader(filePathReader));
 
         row = reader.readLine();
@@ -76,10 +75,12 @@ public class Main {
 
         assetsNumber = names.length;
 
+        int counter = 1;
+
         for (Parameter p : paramsReturn) {
             int elitismCount = (int) (p.getPopulationSize() * p.getElitismCountperCent());
 
-            String filePathWriter = "../ConfParam/PopSize=" + p.getPopulationSize() + "_MutGene=" + p.getMutationProbGene()
+            String filePathWriter = "../OutputExecucaoRetorno/PopSize=" + p.getPopulationSize() + "_MutGene=" + p.getMutationProbGene()
                     + "_MutInd=" + p.getMutationProbIndividual() + "_Crossover=" + p.getCrossoverRate() + "_Elit=" + p.getElitismCountperCent() 
                     + "_Gen=" + p.getNumberOfGenerations() + ".csv";
 
@@ -113,7 +114,7 @@ public class Main {
                 for (int x = 0; (row = reader.readLine()) != null; x++) {
                     line = row.split(",");
                     for (int y = 0; y < assetsNumber; y++) {
-                        covarMatrix[x][y] = Double.valueOf(line[j + 1]);
+                        covarMatrix[x][y] = Double.valueOf(line[y + 1]);
                     }
                 }
 
@@ -164,7 +165,165 @@ public class Main {
 
                 reader.close();
 
+                //GA------------------------------------------
+                GeneticAlgorithm ga = new GeneticAlgorithm(p.getPopulationSize(), p.getMutationProbGene(), p.getMutationProbIndividual(), p.getCrossoverRate(), elitismCount, p.getNumberOfGenerations());
 
+                Population population = ga.initPopulation(assetsNumber, covarMatrix);
+
+                ga.evalPopulation(population);
+
+                while (!ga.isTerminationConditionMet(population)) {
+                    population = ga.crossover(population);
+                    population = ga.mutation(population);
+                    ga.evalPopulation(population);
+                }
+                //----------------------------------------------
+
+                double weightDummie = 1.0 / assetsNumber;
+
+                float[] weightsDummie = new float[assetsNumber];
+
+                double pastReturnDummieSum = 0;
+
+                for (int x = 0; x < assetsNumber; x++) {
+                    pastReturnDummieSum += weightDummie * pastReturn[x];
+                }
+
+                double futureReturnDummieSum = 0;
+
+                for (int x = 0; x < assetsNumber; x++) {
+                    futureReturnDummieSum += weightDummie * futureReturn[x];
+                    weightsDummie[x] = (float) weightDummie;
+                }
+
+                double fitnessDummie = ga.calcFitness(new Individual(weightsDummie), covarMatrix);
+
+                Individual bestInd = population.getFittest(0);
+                double futureReturnSum = 0;
+
+                for (int i = 0; i < futureReturn.length; i++) {
+                    futureReturnSum += bestInd.getGene(i) * futureReturn[i];
+                }
+
+                double pastReturnSum = 0;
+
+                for (int i = 0; i < pastReturn.length; i++) {
+                    pastReturnSum += bestInd.getGene(i) * pastReturn[i];
+                }
+
+                FileWriter writer = new FileWriter(filePathWriter, true);
+
+                writer.append("\n");
+
+                writer.append(day + ",");
+                writer.append(fitnessDummie + ",");
+                writer.append(pastReturnDummieSum + ",");
+                writer.append(futureReturnDummieSum + ",");
+                writer.append(bestInd.getFitness() + ",");
+                writer.append(pastReturnSum + ",");
+                writer.append(""+futureReturnSum);
+
+                for (int x = 0; x < bestInd.getChromossomeLength(); x++) {
+                    writer.append("," + bestInd.getGene(x));
+                }
+
+                writer.close();
+
+            }
+
+            System.out.println("Parametro "+counter+" de "+paramsReturn.size()+"\t RETORNO");
+
+            counter++;
+        }
+
+        counter = 1;
+        for (Parameter p : paramsStD) {
+            int elitismCount = (int) (p.getPopulationSize() * p.getElitismCountperCent());
+
+            String filePathWriter = "../OutputExecucaoStD/PopSize=" + p.getPopulationSize() + "_MutGene=" + p.getMutationProbGene()
+                    + "_MutInd=" + p.getMutationProbIndividual() + "_Crossover=" + p.getCrossoverRate() + "_Elit=" + p.getElitismCountperCent()
+                    + "_Gen=" + p.getNumberOfGenerations() + ".csv";
+
+            try {
+                FileWriter writer = new FileWriter(filePathWriter, true);
+
+                for (int x = 0; x < fillFirstLine().length; x++) {
+                    writer.append(fillFirstLine()[x] + ",");
+                }
+
+                writer.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            for (int day = startDay; day < endDay; day++) {
+
+                double[][] covarMatrix = new double[0][0];
+
+                filePathReader = "../covarFiltrado/" + day + ".csv";
+
+
+                reader = new BufferedReader(new FileReader(filePathReader));
+
+                row = reader.readLine();
+
+                line = row.split(",");
+
+                covarMatrix = new double[assetsNumber][assetsNumber];
+
+                for (int x = 0; (row = reader.readLine()) != null; x++) {
+                    line = row.split(",");
+                    for (int y = 0; y < assetsNumber; y++) {
+                        covarMatrix[x][y] = Double.valueOf(line[y + 1]);
+                    }
+                }
+
+                reader.close();
+
+
+                filePathReader = "../covarFiltrado/" + day + "_RetornoFuturo.csv";
+                double[] futureReturn = new double[0];
+
+                reader = new BufferedReader(new FileReader(filePathReader));
+
+
+                row = reader.readLine();
+
+                line = row.split(",");
+
+                futureReturn = new double[assetsNumber];
+
+                for (int x = 0; (row = reader.readLine()) != null; x++) {
+                    line = row.split(",");
+                    if ((!Double.isNaN(Double.valueOf(line[2]))) && (!Double.isInfinite(Double.valueOf(line[2]))))
+                        futureReturn[x] = Double.valueOf(line[2]);
+                    else
+                        futureReturn[x] = 0;
+
+                }
+
+                reader.close();
+
+
+                filePathReader = "../covarFiltrado/" + day + "_Retorno.csv";
+                double[] pastReturn = new double[0];
+
+                reader = new BufferedReader(new FileReader(filePathReader));
+
+                row = reader.readLine();
+
+
+                pastReturn = new double[assetsNumber];
+
+                for (int x = 0; (row = reader.readLine()) != null; x++) {
+                    line = row.split(",");
+                    if ((!Double.isNaN(Double.valueOf(line[2]))) && (!Double.isInfinite(Double.valueOf(line[2]))))
+                        pastReturn[x] = Double.valueOf(line[2]);
+                    else
+                        pastReturn[x] = 0;
+                }
+
+                reader.close();
 
                 //GA------------------------------------------
                 GeneticAlgorithm ga = new GeneticAlgorithm(p.getPopulationSize(), p.getMutationProbGene(), p.getMutationProbIndividual(), p.getCrossoverRate(), elitismCount, p.getNumberOfGenerations());
@@ -202,14 +361,14 @@ public class Main {
                 Individual bestInd = population.getFittest(0);
                 double futureReturnSum = 0;
 
-                for (int p = 0; p < futureReturn.length; p++) {
-                    futureReturnSum += bestInd.getGene(p) * futureReturn[p];
+                for (int i = 0; i < futureReturn.length; i++) {
+                    futureReturnSum += bestInd.getGene(i) * futureReturn[i];
                 }
 
                 double pastReturnSum = 0;
 
-                for (int p = 0; p < pastReturn.length; p++) {
-                    pastReturnSum += bestInd.getGene(p) * pastReturn[p];
+                for (int i = 0; i < pastReturn.length; i++) {
+                    pastReturnSum += bestInd.getGene(i) * pastReturn[i];
                 }
 
                 FileWriter writer = new FileWriter(filePathWriter, true);
@@ -231,6 +390,10 @@ public class Main {
                 writer.close();
 
             }
+
+            System.out.println("Parametro "+counter+" de "+paramsReturn.size()+"\t STD");
+
+            counter++;
         }
     }
 

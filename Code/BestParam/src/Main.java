@@ -5,12 +5,12 @@ import java.io.FileWriter;
 import java.util.*;
 
 public class Main {
-    public static final int[] populationSize = {1000, 1500};
+    public static final int[] populationSize = {1000, 1500, 500};
     public static final double[] mutationProbGene = {0.02, 0.03};
     public static final double[] mutationProbIndividual = {0.2, 0.3, 0.4};
     public static final double[] crossoverRate = {0.3, 0.4, 0.5, 0.6};
     public static final double[] elitismCountperCent = {0.2, 0.3}; //taxa
-    public static final int[] numberOfGenerations = {500, 1000};
+    public static final int[] numberOfGenerations = {500, 1000, 1500};
     public static final int startDay = 80;
     public static final int endDay = 100;
     public static final int bestSelector = 50;
