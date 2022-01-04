@@ -7,7 +7,7 @@ import java.util.Collections;
 
 public class Main {
     public static final int startDay = 101;
-    public static final int endDay = 197;
+    public static final int endDay = 196;
 
     public static void main(String[] args) throws Exception{
 
