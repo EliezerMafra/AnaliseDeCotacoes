@@ -1,9 +1,5 @@
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
-import java.util.Collections;
 
 public class Main {
     public static final int startDay = 101;
@@ -11,8 +7,8 @@ public class Main {
 
     public static void main(String[] args) throws Exception{
 
-        ArrayList<Parameter> paramsReturn = new ArrayList<Parameter>();
-        ArrayList<Parameter> paramsStD = new ArrayList<Parameter>();
+        ArrayList<Parameter> paramsReturn = new ArrayList<>();
+        ArrayList<Parameter> paramsStD = new ArrayList<>();
 
         String filePathReader = "../paramsBestFutureReturnMean.csv";
 
@@ -20,9 +16,9 @@ public class Main {
 
         String row;
 
-        row = reader.readLine();
+        reader.readLine();
 
-        String[] line = row.split(",");
+        String[] line;
 
         while (((row = reader.readLine()) != null))
         {
@@ -39,9 +35,7 @@ public class Main {
 
         reader = new BufferedReader(new FileReader(filePathReader));
 
-        row = reader.readLine();
-
-        line = row.split(",");
+        reader.readLine();
 
         while (((row = reader.readLine()) != null))
         {
@@ -55,7 +49,7 @@ public class Main {
         reader.close();
 
         filePathReader = "../covarFiltrado/0.csv";
-        String[] names = new String[0];
+        String[] names;
         int assetsNumber;
 
         reader = new BufferedReader(new FileReader(filePathReader));
@@ -67,341 +61,402 @@ public class Main {
         names = new String[line.length - 1];
 
 
-        for (int i = 1; i < line.length; i++) {
-            names[i - 1] = line[i];
-        }
+        System.arraycopy(line, 1, names, 0, line.length - 1);
 
         reader.close();
 
         assetsNumber = names.length;
 
-        int counter = 1;
+        ArrayList<Parameter> paramList1 = new ArrayList<>(paramsReturn.subList(0, 7));
+        ArrayList<Parameter> paramList2 = new ArrayList<>(paramsReturn.subList(7, 14));
+        ArrayList<Parameter> paramList3 = new ArrayList<>(paramsReturn.subList(14, 21));
+        ArrayList<Parameter> paramList4 = new ArrayList<>(paramsReturn.subList(21, 28));
+        ArrayList<Parameter> paramList5 = new ArrayList<>(paramsReturn.subList(28, 35));
+        ArrayList<Parameter> paramList6 = new ArrayList<>(paramsReturn.subList(35, 42));
+        ArrayList<Parameter> paramList7 = new ArrayList<>(paramsReturn.subList(42, 50));
 
-        for (Parameter p : paramsReturn) {
-            int elitismCount = (int) (p.getPopulationSize() * p.getElitismCountperCent());
+        ArrayList<ArrayList<Parameter>> listas = new ArrayList<>();
 
-            String filePathWriter = "../OutputExecucaoRetorno/PopSize=" + p.getPopulationSize() + "_MutGene=" + p.getMutationProbGene()
-                    + "_MutInd=" + p.getMutationProbIndividual() + "_Crossover=" + p.getCrossoverRate() + "_Elit=" + p.getElitismCountperCent() 
-                    + "_Gen=" + p.getNumberOfGenerations() + ".csv";
+        listas.add(paramList1);
+        listas.add(paramList2);
+        listas.add(paramList3);
+        listas.add(paramList4);
+        listas.add(paramList5);
+        listas.add(paramList6);
+        listas.add(paramList7);
 
-            try {
-                FileWriter writer = new FileWriter(filePathWriter, true);
+        for (ArrayList<Parameter> lista : listas) {
+            Thread t = new Thread(() -> {
+                String filePathReader1;
+                BufferedReader reader1;
+                String row1;
+                String[] line1;
+                int counter = 1;
 
-                for (int x = 0; x < fillFirstLine().length; x++) {
-                    writer.append(fillFirstLine()[x] + ",");
-                }
+                for (Parameter p : lista) {
+                    try {
+                        int elitismCount = (int) (p.getPopulationSize() * p.getElitismCountperCent());
 
-                writer.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+                        String filePathWriter = "../OutputExecucaoRetorno/PopSize=" + p.getPopulationSize() + "_MutGene=" + p.getMutationProbGene()
+                                + "_MutInd=" + p.getMutationProbIndividual() + "_Crossover=" + p.getCrossoverRate() + "_Elit=" + p.getElitismCountperCent()
+                                + "_Gen=" + p.getNumberOfGenerations() + ".csv";
 
-            for (int day = startDay; day < endDay; day++) {
+                        try {
+                            FileWriter writer = new FileWriter(filePathWriter, true);
 
-                double[][] covarMatrix = new double[0][0];
+                            for (int x = 0; x < fillFirstLine().length; x++) {
+                                writer.append(fillFirstLine()[x] + ",");
+                            }
 
-                filePathReader = "../covarFiltrado/" + day + ".csv";
+                            writer.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        for (int day = startDay; day < endDay; day++) {
 
 
-                reader = new BufferedReader(new FileReader(filePathReader));
+                            double[][] covarMatrix = new double[0][0];
 
-                row = reader.readLine();
+                            filePathReader1 = "../covarFiltrado/" + day + ".csv";
 
-                line = row.split(",");
 
-                covarMatrix = new double[assetsNumber][assetsNumber];
+                            reader1 = new BufferedReader(new FileReader(filePathReader1));
 
-                for (int x = 0; (row = reader.readLine()) != null; x++) {
-                    line = row.split(",");
-                    for (int y = 0; y < assetsNumber; y++) {
-                        covarMatrix[x][y] = Double.valueOf(line[y + 1]);
+                            row1 = reader1.readLine();
+
+                            line1 = row1.split(",");
+
+                            covarMatrix = new double[assetsNumber][assetsNumber];
+
+                            for (int x = 0; (row1 = reader1.readLine()) != null; x++) {
+                                line1 = row1.split(",");
+                                for (int y = 0; y < assetsNumber; y++) {
+                                    covarMatrix[x][y] = Double.valueOf(line1[y + 1]);
+                                }
+                            }
+
+                            reader1.close();
+
+
+                            filePathReader1 = "../covarFiltrado/" + day + "_RetornoFuturo.csv";
+                            double[] futureReturn = new double[0];
+
+                            reader1 = new BufferedReader(new FileReader(filePathReader1));
+
+
+                            row1 = reader1.readLine();
+
+                            line1 = row1.split(",");
+
+                            futureReturn = new double[assetsNumber];
+
+                            for (int x = 0; (row1 = reader1.readLine()) != null; x++) {
+                                line1 = row1.split(",");
+                                if ((!Double.isNaN(Double.valueOf(line1[2]))) && (!Double.isInfinite(Double.valueOf(line1[2]))))
+                                    futureReturn[x] = Double.valueOf(line1[2]);
+                                else
+                                    futureReturn[x] = 0;
+
+                            }
+
+                            reader1.close();
+
+
+                            filePathReader1 = "../covarFiltrado/" + day + "_Retorno.csv";
+                            double[] pastReturn = new double[0];
+
+                            reader1 = new BufferedReader(new FileReader(filePathReader1));
+
+                            row1 = reader1.readLine();
+
+
+                            pastReturn = new double[assetsNumber];
+
+                            for (int x = 0; (row1 = reader1.readLine()) != null; x++) {
+                                line1 = row1.split(",");
+                                if ((!Double.isNaN(Double.valueOf(line1[2]))) && (!Double.isInfinite(Double.valueOf(line1[2]))))
+                                    pastReturn[x] = Double.valueOf(line1[2]);
+                                else
+                                    pastReturn[x] = 0;
+                            }
+
+                            reader1.close();
+
+                            //GA------------------------------------------
+                            GeneticAlgorithm ga = new GeneticAlgorithm(p.getPopulationSize(), p.getMutationProbGene(), p.getMutationProbIndividual(), p.getCrossoverRate(), elitismCount, p.getNumberOfGenerations());
+
+                            Population population = ga.initPopulation(assetsNumber, covarMatrix);
+
+                            ga.evalPopulation(population);
+
+                            while (!ga.isTerminationConditionMet(population)) {
+                                population = ga.crossover(population);
+                                population = ga.mutation(population);
+                                ga.evalPopulation(population);
+                            }
+                            //----------------------------------------------
+
+                            double weightDummie = 1.0 / assetsNumber;
+
+                            float[] weightsDummie = new float[assetsNumber];
+
+                            double pastReturnDummieSum = 0;
+
+                            for (int x = 0; x < assetsNumber; x++) {
+                                pastReturnDummieSum += weightDummie * pastReturn[x];
+                            }
+
+                            double futureReturnDummieSum = 0;
+
+                            for (int x = 0; x < assetsNumber; x++) {
+                                futureReturnDummieSum += weightDummie * futureReturn[x];
+                                weightsDummie[x] = (float) weightDummie;
+                            }
+
+                            double fitnessDummie = ga.calcFitness(new Individual(weightsDummie), covarMatrix);
+
+                            Individual bestInd = population.getFittest(0);
+                            double futureReturnSum = 0;
+
+                            for (int i = 0; i < futureReturn.length; i++) {
+                                futureReturnSum += bestInd.getGene(i) * futureReturn[i];
+                            }
+
+                            double pastReturnSum = 0;
+
+                            for (int i = 0; i < pastReturn.length; i++) {
+                                pastReturnSum += bestInd.getGene(i) * pastReturn[i];
+                            }
+
+                            FileWriter writer = new FileWriter(filePathWriter, true);
+
+                            writer.append("\n");
+
+                            writer.append(day + ",");
+                            writer.append(fitnessDummie + ",");
+                            writer.append(pastReturnDummieSum + ",");
+                            writer.append(futureReturnDummieSum + ",");
+                            writer.append(bestInd.getFitness() + ",");
+                            writer.append(pastReturnSum + ",");
+                            writer.append("" + futureReturnSum);
+
+                            for (int x = 0; x < bestInd.getChromossomeLength(); x++) {
+                                writer.append("," + bestInd.getGene(x));
+                            }
+
+                            writer.close();
+
+
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
+
+
+                    System.out.println("Parametro "+counter+" de "+paramsReturn.size()+"\t RETORNO");
+
+                    counter++;
                 }
+            });
 
-                reader.close();
-
-
-                filePathReader = "../covarFiltrado/" + day + "_RetornoFuturo.csv";
-                double[] futureReturn = new double[0];
-
-                reader = new BufferedReader(new FileReader(filePathReader));
-
-
-                row = reader.readLine();
-
-                line = row.split(",");
-
-                futureReturn = new double[assetsNumber];
-
-                for (int x = 0; (row = reader.readLine()) != null; x++) {
-                    line = row.split(",");
-                    if ((!Double.isNaN(Double.valueOf(line[2]))) && (!Double.isInfinite(Double.valueOf(line[2]))))
-                        futureReturn[x] = Double.valueOf(line[2]);
-                    else
-                        futureReturn[x] = 0;
-
-                }
-
-                reader.close();
-
-
-                filePathReader = "../covarFiltrado/" + day + "_Retorno.csv";
-                double[] pastReturn = new double[0];
-
-                reader = new BufferedReader(new FileReader(filePathReader));
-
-                row = reader.readLine();
-
-
-                pastReturn = new double[assetsNumber];
-
-                for (int x = 0; (row = reader.readLine()) != null; x++) {
-                    line = row.split(",");
-                    if ((!Double.isNaN(Double.valueOf(line[2]))) && (!Double.isInfinite(Double.valueOf(line[2]))))
-                        pastReturn[x] = Double.valueOf(line[2]);
-                    else
-                        pastReturn[x] = 0;
-                }
-
-                reader.close();
-
-                //GA------------------------------------------
-                GeneticAlgorithm ga = new GeneticAlgorithm(p.getPopulationSize(), p.getMutationProbGene(), p.getMutationProbIndividual(), p.getCrossoverRate(), elitismCount, p.getNumberOfGenerations());
-
-                Population population = ga.initPopulation(assetsNumber, covarMatrix);
-
-                ga.evalPopulation(population);
-
-                while (!ga.isTerminationConditionMet(population)) {
-                    population = ga.crossover(population);
-                    population = ga.mutation(population);
-                    ga.evalPopulation(population);
-                }
-                //----------------------------------------------
-
-                double weightDummie = 1.0 / assetsNumber;
-
-                float[] weightsDummie = new float[assetsNumber];
-
-                double pastReturnDummieSum = 0;
-
-                for (int x = 0; x < assetsNumber; x++) {
-                    pastReturnDummieSum += weightDummie * pastReturn[x];
-                }
-
-                double futureReturnDummieSum = 0;
-
-                for (int x = 0; x < assetsNumber; x++) {
-                    futureReturnDummieSum += weightDummie * futureReturn[x];
-                    weightsDummie[x] = (float) weightDummie;
-                }
-
-                double fitnessDummie = ga.calcFitness(new Individual(weightsDummie), covarMatrix);
-
-                Individual bestInd = population.getFittest(0);
-                double futureReturnSum = 0;
-
-                for (int i = 0; i < futureReturn.length; i++) {
-                    futureReturnSum += bestInd.getGene(i) * futureReturn[i];
-                }
-
-                double pastReturnSum = 0;
-
-                for (int i = 0; i < pastReturn.length; i++) {
-                    pastReturnSum += bestInd.getGene(i) * pastReturn[i];
-                }
-
-                FileWriter writer = new FileWriter(filePathWriter, true);
-
-                writer.append("\n");
-
-                writer.append(day + ",");
-                writer.append(fitnessDummie + ",");
-                writer.append(pastReturnDummieSum + ",");
-                writer.append(futureReturnDummieSum + ",");
-                writer.append(bestInd.getFitness() + ",");
-                writer.append(pastReturnSum + ",");
-                writer.append(""+futureReturnSum);
-
-                for (int x = 0; x < bestInd.getChromossomeLength(); x++) {
-                    writer.append("," + bestInd.getGene(x));
-                }
-
-                writer.close();
-
-            }
-
-            System.out.println("Parametro "+counter+" de "+paramsReturn.size()+"\t RETORNO");
-
-            counter++;
+            t.start();
         }
 
-        counter = 1;
-        for (Parameter p : paramsStD) {
-            int elitismCount = (int) (p.getPopulationSize() * p.getElitismCountperCent());
 
-            String filePathWriter = "../OutputExecucaoStD/PopSize=" + p.getPopulationSize() + "_MutGene=" + p.getMutationProbGene()
-                    + "_MutInd=" + p.getMutationProbIndividual() + "_Crossover=" + p.getCrossoverRate() + "_Elit=" + p.getElitismCountperCent()
-                    + "_Gen=" + p.getNumberOfGenerations() + ".csv";
+        paramList1 = new ArrayList<>(paramsStD.subList(0, 7));
+        paramList2 = new ArrayList<>(paramsStD.subList(7, 14));
+        paramList3 = new ArrayList<>(paramsStD.subList(14, 21));
+        paramList4 = new ArrayList<>(paramsStD.subList(21, 28));
+        paramList5 = new ArrayList<>(paramsStD.subList(28, 35));
+        paramList6 = new ArrayList<>(paramsStD.subList(35, 42));
+        paramList7 = new ArrayList<>(paramsStD.subList(42, 50));
 
-            try {
-                FileWriter writer = new FileWriter(filePathWriter, true);
+        listas.clear();
 
-                for (int x = 0; x < fillFirstLine().length; x++) {
-                    writer.append(fillFirstLine()[x] + ",");
-                }
+        listas.add(paramList1);
+        listas.add(paramList2);
+        listas.add(paramList3);
+        listas.add(paramList4);
+        listas.add(paramList5);
+        listas.add(paramList6);
+        listas.add(paramList7);
 
-                writer.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        for (ArrayList<Parameter> lista : listas) {
+            Thread t = new Thread(() -> {
+                String filePathReader12;
+                BufferedReader reader12;
+                String row12;
+                String[] line12;
+                int counter = 1;
 
-            for (int day = startDay; day < endDay; day++) {
+                for (Parameter p : lista) {
+                    try {
+                        int elitismCount = (int) (p.getPopulationSize() * p.getElitismCountperCent());
 
-                double[][] covarMatrix = new double[0][0];
+                        String filePathWriter = "../OutputExecucaoStD/PopSize=" + p.getPopulationSize() + "_MutGene=" + p.getMutationProbGene()
+                                + "_MutInd=" + p.getMutationProbIndividual() + "_Crossover=" + p.getCrossoverRate() + "_Elit=" + p.getElitismCountperCent()
+                                + "_Gen=" + p.getNumberOfGenerations() + ".csv";
 
-                filePathReader = "../covarFiltrado/" + day + ".csv";
+                        try {
+                            FileWriter writer = new FileWriter(filePathWriter, true);
+
+                            for (int x = 0; x < fillFirstLine().length; x++) {
+                                writer.append(fillFirstLine()[x] + ",");
+                            }
+
+                            writer.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        for (int day = startDay; day < endDay; day++) {
+
+                            double[][] covarMatrix = new double[0][0];
+
+                            filePathReader12 = "../covarFiltrado/" + day + ".csv";
 
 
-                reader = new BufferedReader(new FileReader(filePathReader));
+                            reader12 = new BufferedReader(new FileReader(filePathReader12));
 
-                row = reader.readLine();
+                            row12 = reader12.readLine();
 
-                line = row.split(",");
+                            line12 = row12.split(",");
 
-                covarMatrix = new double[assetsNumber][assetsNumber];
+                            covarMatrix = new double[assetsNumber][assetsNumber];
 
-                for (int x = 0; (row = reader.readLine()) != null; x++) {
-                    line = row.split(",");
-                    for (int y = 0; y < assetsNumber; y++) {
-                        covarMatrix[x][y] = Double.valueOf(line[y + 1]);
+                            for (int x = 0; (row12 = reader12.readLine()) != null; x++) {
+                                line12 = row12.split(",");
+                                for (int y = 0; y < assetsNumber; y++) {
+                                    covarMatrix[x][y] = Double.valueOf(line12[y + 1]);
+                                }
+                            }
+
+                            reader12.close();
+
+
+                            filePathReader12 = "../covarFiltrado/" + day + "_RetornoFuturo.csv";
+                            double[] futureReturn = new double[0];
+
+                            reader12 = new BufferedReader(new FileReader(filePathReader12));
+
+
+                            row12 = reader12.readLine();
+
+                            line12 = row12.split(",");
+
+                            futureReturn = new double[assetsNumber];
+
+                            for (int x = 0; (row12 = reader12.readLine()) != null; x++) {
+                                line12 = row12.split(",");
+                                if ((!Double.isNaN(Double.valueOf(line12[2]))) && (!Double.isInfinite(Double.valueOf(line12[2]))))
+                                    futureReturn[x] = Double.valueOf(line12[2]);
+                                else
+                                    futureReturn[x] = 0;
+
+                            }
+
+                            reader12.close();
+
+
+                            filePathReader12 = "../covarFiltrado/" + day + "_Retorno.csv";
+                            double[] pastReturn = new double[0];
+
+                            reader12 = new BufferedReader(new FileReader(filePathReader12));
+
+                            row12 = reader12.readLine();
+
+
+                            pastReturn = new double[assetsNumber];
+
+                            for (int x = 0; (row12 = reader12.readLine()) != null; x++) {
+                                line12 = row12.split(",");
+                                if ((!Double.isNaN(Double.valueOf(line12[2]))) && (!Double.isInfinite(Double.valueOf(line12[2]))))
+                                    pastReturn[x] = Double.valueOf(line12[2]);
+                                else
+                                    pastReturn[x] = 0;
+                            }
+
+                            reader12.close();
+
+                            //GA------------------------------------------
+                            GeneticAlgorithm ga = new GeneticAlgorithm(p.getPopulationSize(), p.getMutationProbGene(), p.getMutationProbIndividual(), p.getCrossoverRate(), elitismCount, p.getNumberOfGenerations());
+
+                            Population population = ga.initPopulation(assetsNumber, covarMatrix);
+
+                            ga.evalPopulation(population);
+
+                            while (!ga.isTerminationConditionMet(population)) {
+                                population = ga.crossover(population);
+                                population = ga.mutation(population);
+                                ga.evalPopulation(population);
+                            }
+                            //----------------------------------------------
+
+                            double weightDummie = 1.0 / assetsNumber;
+
+                            float[] weightsDummie = new float[assetsNumber];
+
+                            double pastReturnDummieSum = 0;
+
+                            for (int x = 0; x < assetsNumber; x++) {
+                                pastReturnDummieSum += weightDummie * pastReturn[x];
+                            }
+
+                            double futureReturnDummieSum = 0;
+
+                            for (int x = 0; x < assetsNumber; x++) {
+                                futureReturnDummieSum += weightDummie * futureReturn[x];
+                                weightsDummie[x] = (float) weightDummie;
+                            }
+
+                            double fitnessDummie = ga.calcFitness(new Individual(weightsDummie), covarMatrix);
+
+                            Individual bestInd = population.getFittest(0);
+                            double futureReturnSum = 0;
+
+                            for (int i = 0; i < futureReturn.length; i++) {
+                                futureReturnSum += bestInd.getGene(i) * futureReturn[i];
+                            }
+
+                            double pastReturnSum = 0;
+
+                            for (int i = 0; i < pastReturn.length; i++) {
+                                pastReturnSum += bestInd.getGene(i) * pastReturn[i];
+                            }
+
+                            FileWriter writer = new FileWriter(filePathWriter, true);
+
+                            writer.append("\n");
+
+                            writer.append(day + ",");
+                            writer.append(fitnessDummie + ",");
+                            writer.append(pastReturnDummieSum + ",");
+                            writer.append(futureReturnDummieSum + ",");
+                            writer.append(bestInd.getFitness() + ",");
+                            writer.append(pastReturnSum + ",");
+                            writer.append("" + futureReturnSum);
+
+                            for (int x = 0; x < bestInd.getChromossomeLength(); x++) {
+                                writer.append("," + bestInd.getGene(x));
+                            }
+
+                            writer.close();
+
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
+
+                    System.out.println("Parametro "+counter+" de "+paramsReturn.size()+"\t STD");
+
+                    counter++;
                 }
+            });
 
-                reader.close();
-
-
-                filePathReader = "../covarFiltrado/" + day + "_RetornoFuturo.csv";
-                double[] futureReturn = new double[0];
-
-                reader = new BufferedReader(new FileReader(filePathReader));
-
-
-                row = reader.readLine();
-
-                line = row.split(",");
-
-                futureReturn = new double[assetsNumber];
-
-                for (int x = 0; (row = reader.readLine()) != null; x++) {
-                    line = row.split(",");
-                    if ((!Double.isNaN(Double.valueOf(line[2]))) && (!Double.isInfinite(Double.valueOf(line[2]))))
-                        futureReturn[x] = Double.valueOf(line[2]);
-                    else
-                        futureReturn[x] = 0;
-
-                }
-
-                reader.close();
-
-
-                filePathReader = "../covarFiltrado/" + day + "_Retorno.csv";
-                double[] pastReturn = new double[0];
-
-                reader = new BufferedReader(new FileReader(filePathReader));
-
-                row = reader.readLine();
-
-
-                pastReturn = new double[assetsNumber];
-
-                for (int x = 0; (row = reader.readLine()) != null; x++) {
-                    line = row.split(",");
-                    if ((!Double.isNaN(Double.valueOf(line[2]))) && (!Double.isInfinite(Double.valueOf(line[2]))))
-                        pastReturn[x] = Double.valueOf(line[2]);
-                    else
-                        pastReturn[x] = 0;
-                }
-
-                reader.close();
-
-                //GA------------------------------------------
-                GeneticAlgorithm ga = new GeneticAlgorithm(p.getPopulationSize(), p.getMutationProbGene(), p.getMutationProbIndividual(), p.getCrossoverRate(), elitismCount, p.getNumberOfGenerations());
-
-                Population population = ga.initPopulation(assetsNumber, covarMatrix);
-
-                ga.evalPopulation(population);
-
-                while (!ga.isTerminationConditionMet(population)) {
-                    population = ga.crossover(population);
-                    population = ga.mutation(population);
-                    ga.evalPopulation(population);
-                }
-                //----------------------------------------------
-
-                double weightDummie = 1.0 / assetsNumber;
-
-                float[] weightsDummie = new float[assetsNumber];
-
-                double pastReturnDummieSum = 0;
-
-                for (int x = 0; x < assetsNumber; x++) {
-                    pastReturnDummieSum += weightDummie * pastReturn[x];
-                }
-
-                double futureReturnDummieSum = 0;
-
-                for (int x = 0; x < assetsNumber; x++) {
-                    futureReturnDummieSum += weightDummie * futureReturn[x];
-                    weightsDummie[x] = (float) weightDummie;
-                }
-
-                double fitnessDummie = ga.calcFitness(new Individual(weightsDummie), covarMatrix);
-
-                Individual bestInd = population.getFittest(0);
-                double futureReturnSum = 0;
-
-                for (int i = 0; i < futureReturn.length; i++) {
-                    futureReturnSum += bestInd.getGene(i) * futureReturn[i];
-                }
-
-                double pastReturnSum = 0;
-
-                for (int i = 0; i < pastReturn.length; i++) {
-                    pastReturnSum += bestInd.getGene(i) * pastReturn[i];
-                }
-
-                FileWriter writer = new FileWriter(filePathWriter, true);
-
-                writer.append("\n");
-
-                writer.append(day + ",");
-                writer.append(fitnessDummie + ",");
-                writer.append(pastReturnDummieSum + ",");
-                writer.append(futureReturnDummieSum + ",");
-                writer.append(bestInd.getFitness() + ",");
-                writer.append(pastReturnSum + ",");
-                writer.append(""+futureReturnSum);
-
-                for (int x = 0; x < bestInd.getChromossomeLength(); x++) {
-                    writer.append("," + bestInd.getGene(x));
-                }
-
-                writer.close();
-
-            }
-
-            System.out.println("Parametro "+counter+" de "+paramsReturn.size()+"\t STD");
-
-            counter++;
+            t.start();
         }
     }
-
-
-
-
-
-
 
     public final static String[] fillFirstLine() {
 
