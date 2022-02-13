@@ -7,9 +7,9 @@ paramsReturn = pd.read_csv("../Code/paramsBestStdDeviation.csv")
 
 fig1 = plt.figure()
 ax1 = fig1.add_axes([0.1,0.1,0.8,0.8])
-ax1.set_xlabel('Week')
-ax1.set_ylabel("Cumulative Returns")
-ax1.set_title("Portfolio Cumulative Returns STD")
+ax1.set_xlabel('Semana')
+ax1.set_ylabel("Retorno Cumulativo [%]")
+ax1.set_title("Retorno Cumulativo dos 50 Melhores Parâmetros de Desvio Padrão ")
 
 for i in paramsReturn.index:
     paramAux = paramsReturn.loc[i]
@@ -32,7 +32,7 @@ for i in paramsReturn.index:
 
         port_ret = dfReturns
 
-        cumulative_ret = (port_ret + 1).cumprod()
+        cumulative_ret = (port_ret + 1).cumprod()*100
 
         ax1.plot(cumulative_ret)
 
